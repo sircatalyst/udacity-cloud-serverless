@@ -1,13 +1,19 @@
 import * as AWS from 'aws-sdk'
+// import * as AWSXRay from 'aws-xray-sdk'
+const AWSXRay = require('aws-xray-sdk')
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { Types } from 'aws-sdk/clients/s3'
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate'
 
+// Needed to capture AWS tracing
+const XAWS = AWSXRay.captureAWS(AWS)
 export class ToDoAccess {
   constructor(
-    private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
-    private readonly s3Client: Types = new AWS.S3({ signatureVersion: 'v4' }),
+    // private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
+    // private readonly s3Client: Types = new AWS.S3({ signatureVersion: 'v4' }),
+    private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
+    private readonly s3Client: Types = new XAWS.S3({ signatureVersion: 'v4' }),
     private readonly todoTable = process.env.TODOS_TABLE,
     private readonly s3BucketName = process.env.ATTACHMENT_S3_BUCKET
   ) {}
